@@ -43,6 +43,9 @@ function reload(arr) {
     li.onclick = () => {
       changeMovie(item);
     };
+    del.onclick = () => {
+      li.remove()
+    }
   }
 }
 let genres = movies.map((item) => item.Genre);
@@ -60,15 +63,23 @@ function genre_promo_menu(arr) {
     li.classList.add("promo__menu-item");
 
     li.innerHTML = item;
-	console.log(item);
-	li.onclick = () => {
-		filterMoviesByGenre(item);
-	}
+    li.onclick = () => {
+      filterMoviesByGenre(item);
+    };
   }
 }
 
 function filterMoviesByGenre(arr) {
-	// if(arr === )
+  let filtered1 = movies.filter((item) => {
+    item.Genre == arr;
+
+    if ((arr = "All")) {
+      return true;
+    }
+  });
+  console.log(filtered1);
+
+  reload(filtered1);
 }
 
 genre_promo_menu(genres);
@@ -78,4 +89,64 @@ function changeMovie(item) {
   promo_genre.innerHTML = item.Genre;
   promo_title.innerHTML = item.Title;
   promo_plot.innerHTML = item.Plot;
+}
+
+
+let ratings = document.querySelectorAll(".rating");
+
+if (ratings.length > 0) {
+  initRatings();
+}
+
+function initRatings() {
+  let ratingActive, ratingValue;
+
+  for (let index = 0; index < ratings.length; index++) {
+    const rating = ratings[index];
+    initRating(rating);
+  }
+
+  function initRating(rating) {
+    initRatingVars(rating);
+
+    setRatingActiveWidth();
+
+    if (rating.classList.contains("rating_set")) {
+      setRating(rating);
+    }
+  }
+
+  function initRatingVars(rating) {
+    ratingActive = rating.querySelector(".rating_active");
+    ratingValue = rating.querySelector(".rating_value");
+  }
+  function setRatingActiveWidth(index = ratingValue.innerHTML) {
+    let RatingActiveWidth = index / 0.10;
+    ratingActive.style.width = `${RatingActiveWidth}%`;
+  }
+
+  function setRating(rating) {
+    let ratingItems = document.querySelectorAll(".rating_item");
+    for (let index = 0; index < ratingItems.length; index++) {
+      const ratingItem = ratingItems[index];
+      ratingItem.addEventListener("mouseenter", function (e) {
+        initRatingVars(rating);
+
+        setRatingActiveWidth(ratingItem.value);
+      });
+      ratingItem.addEventListener("mouseleave", function (e) {
+        setRatingActiveWidth();
+      });
+      ratingItem.onclick = (e) => {
+        initRatingVars(rating);
+
+        if (rating.dataset.ajax) {
+          setRatingValue(ratingItem.value, rating);
+        } else {
+          ratingValue.innerHTML = index + 1;
+          setRatingActiveWidth()
+        }
+      };
+    }
+  }
 }
